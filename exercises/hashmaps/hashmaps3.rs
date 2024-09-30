@@ -14,7 +14,7 @@
 // Execute `rustlings hint hashmaps3` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
+
 
 use std::collections::HashMap;
 
@@ -28,18 +28,68 @@ fn build_scores_table(results: String) -> HashMap<String, Team> {
     // The name of the team is the key and its associated struct is the value.
     let mut scores: HashMap<String, Team> = HashMap::new();
 
+    let mut team_E:Team = Team{goals_scored:0, goals_conceded:0};
+    let mut team_F:Team = Team{goals_scored:0, goals_conceded:0};
+    let mut team_I:Team = Team{goals_scored:0, goals_conceded:0};
+    let mut team_P:Team = Team{goals_scored:0, goals_conceded:0};
+    let mut team_S:Team = Team{goals_scored:0, goals_conceded:0};
+    let mut team_G:Team = Team{goals_scored:0, goals_conceded:0};
+
+    let Eng = String::from("England");
+    let Fra = String::from("France");
+    let Ita = String::from("Italy");
+    let Pol = String::from("Poland");
+    let Spa = String::from("Spain");
+    let Ger = String::from("Germany");
+
     for r in results.lines() {
         let v: Vec<&str> = r.split(',').collect();
-        let team_1_name = v[0].to_string();
+        let team_1_name = v[0];
         let team_1_score: u8 = v[2].parse().unwrap();
-        let team_2_name = v[1].to_string();
+        let team_2_name = v[1];
         let team_2_score: u8 = v[3].parse().unwrap();
+    
         // TODO: Populate the scores table with details extracted from the
         // current line. Keep in mind that goals scored by team_1
         // will be the number of goals conceded from team_2, and similarly
         // goals scored by team_2 will be the number of goals conceded by
         // team_1.
+        match (team_1_name, team_2_name){
+            ("England","France") => {
+                team_E.goals_scored = team_1_score;
+                team_E.goals_conceded += team_2_score;
+                team_F.goals_scored += team_2_score;
+                team_F.goals_conceded += team_1_score;
+            },
+            ("France","Italy") => {
+                team_F.goals_scored += team_1_score;
+                team_F.goals_conceded += team_2_score;
+                team_I.goals_scored += team_2_score;
+                team_I.goals_conceded += team_1_score;
+            },
+            ("Poland","Spain") => {
+                team_P.goals_scored += team_1_score;
+                team_P.goals_conceded += team_2_score;
+                team_S.goals_scored += team_2_score;
+                team_S.goals_conceded += team_1_score;
+            },
+            ("Germany","England") => {
+                team_G.goals_scored += team_1_score;
+                team_G.goals_conceded += team_2_score;
+                team_E.goals_scored += team_2_score;
+                team_E.goals_conceded += team_1_score;
+            },
+            _ => {},
+        };
+        
     }
+    scores.insert(Eng,team_E);
+    scores.insert(Fra,team_F);
+    scores.insert(Ita,team_I);
+    scores.insert(Pol,team_P);
+    scores.insert(Spa,team_S);
+    scores.insert(Ger,team_G);
+        
     scores
 }
 
