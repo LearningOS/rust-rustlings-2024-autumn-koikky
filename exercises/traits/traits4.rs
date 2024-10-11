@@ -7,8 +7,6 @@
 // Execute `rustlings hint traits4` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
 pub trait Licensed {
     fn licensing_info(&self) -> String {
         "some information".to_string()
@@ -23,7 +21,12 @@ impl Licensed for SomeSoftware {}
 impl Licensed for OtherSoftware {}
 
 // YOU MAY ONLY CHANGE THE NEXT LINE
-fn compare_license_types(software: ??, software_two: ??) -> bool {
+// fn compare_license_types<T>(software:T, software_two:T) -> bool 
+// where T: Licensed, 
+// {
+//     software.licensing_info() == software_two.licensing_info()
+// }
+fn compare_license_types(software:impl Licensed, software_two: impl Licensed) -> bool  {
     software.licensing_info() == software_two.licensing_info()
 }
 
@@ -33,17 +36,17 @@ mod tests {
 
     #[test]
     fn compare_license_information() {
-        let some_software = SomeSoftware {};
-        let other_software = OtherSoftware {};
+        let some_software1 = SomeSoftware {};
+        let other_software1 = OtherSoftware {};
 
-        assert!(compare_license_types(some_software, other_software));
+        assert!(compare_license_types(some_software1, other_software1));
     }
 
     #[test]
     fn compare_license_information_backwards() {
-        let some_software = SomeSoftware {};
-        let other_software = OtherSoftware {};
+        let some_software2 = SomeSoftware {};
+        let other_software2 = OtherSoftware {};
 
-        assert!(compare_license_types(other_software, some_software));
+        assert!(compare_license_types(other_software2, some_software2));
     }
 }

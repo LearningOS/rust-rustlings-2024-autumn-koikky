@@ -3,13 +3,13 @@
 	This question requires you to use a stack to achieve a bracket match
 */
 
-// I AM NOT DONE
+
 #[derive(Debug)]
 struct Stack<T> {
 	size: usize,
 	data: Vec<T>,
 }
-impl<T> Stack<T> {
+impl<T:Clone> Stack<T> {
 	fn new() -> Self {
 		Self {
 			size: 0,
@@ -32,7 +32,15 @@ impl<T> Stack<T> {
 	}
 	fn pop(&mut self) -> Option<T> {
 		// TODO
-		None
+		if self.size > 0 {
+			self.size -= 1;
+			let temp = self.data[self.size].clone();
+			self.data.remove(self.size);
+			return Some(temp)
+		} else {
+			return None
+		}
+		//None
 	}
 	fn peek(&self) -> Option<&T> {
 		if 0 == self.size {
@@ -101,8 +109,74 @@ impl<'a, T> Iterator for IterMut<'a, T> {
 
 fn bracket_match(bracket: &str) -> bool
 {
+	let mut stack = Stack::new();
+
+    for c in bracket.chars() {
+        match c {
+            '(' | '{' | '[' => stack.push(c),
+            ')' => {
+                if stack.pop() != Some('(') {
+                    return false;
+                }
+            }
+            '}' => {
+                if stack.pop() != Some('{') {
+                    return false;
+                }
+            }
+            ']' => {
+                if stack.pop() != Some('[') {
+                    return false;
+                }
+            }
+            _ => {}  // Ignore other characters
+        }
+    }
+
+    stack.is_empty()
 	//TODO
-	true
+	// let mut stack_bracket = Stack::new();
+	// for char_item in bracket.chars() {
+	// 	if char_item == '(' || char_item == '{' || char_item == '[' {
+	// 		stack_bracket.push(char_item);
+	// 	}
+	// 	else if char_item == ')' || char_item == '}' || char_item == ']' {
+			
+	// 		if char_item == ')' 
+	// 			{
+	// 				if let Some(x) = stack_bracket.peek() {
+	// 					if *x == ')' {
+	// 						stack_bracket.pop();
+	// 					} else {
+	// 						return false;
+	// 					}
+	// 				}
+	// 			}
+	// 			else if char_item == '}' {
+	// 				if let Some(x) = stack_bracket.peek() {
+	// 					if *x == '}' {
+	// 						stack_bracket.pop();
+	// 					} else {
+	// 						return false;
+	// 					}
+	// 				}
+	// 			}
+	// 			else if char_item == ']' {
+	// 				if let Some(x) = stack_bracket.peek() {
+	// 					if *x == ']' {
+	// 						stack_bracket.pop();
+	// 					} else {
+	// 						return false;
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	
+	// if !stack_bracket.is_empty() {
+	// 	return false;
+	// }
+	// return true
 }
 
 #[cfg(test)]

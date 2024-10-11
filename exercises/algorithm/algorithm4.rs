@@ -3,12 +3,12 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
+
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 struct TreeNode<T>
 where
     T: Ord,
@@ -41,23 +41,165 @@ where
 
 impl<T> BinarySearchTree<T>
 where
-    T: Ord,
+    T: Ord + Clone,
 {
 
     fn new() -> Self {
         BinarySearchTree { root: None }
     }
 
-    // Insert a value into the BST
-    fn insert(&mut self, value: T) {
-        //TODO
+    /// 递归插入方法
+    fn insert_recursive(&mut self, mut node: Box<TreeNode<T>>, value: T) -> Box<TreeNode<T>> {
+        if value < node.value {
+            if let Some(mut left) = node.left.take() {
+                left = self.insert_recursive(left, value);
+                node.left = Some(left);
+            } else {
+                node.left = Some(Box::new(TreeNode::new(value)));
+            }
+        } else {
+            if let Some(mut right) = node.right.take() {
+                right = self.insert_recursive(right, value);
+                node.right = Some(right);
+            } else {
+                node.right = Some(Box::new(TreeNode::new(value)));
+            }
+        }
+        node
     }
 
-    // Search for a value in the BST
-    fn search(&self, value: T) -> bool {
+    // Insert a value into the BST
+    fn insert(&mut self, value: T) {
+        if self.search(value.clone()) {
+            return;
+        }
+        if let Some(mut root_node) = self.root.take() {
+            root_node = self.insert_recursive(root_node, value);
+            self.root = Some(root_node);
+        } else {
+            self.root = Some(Box::new(TreeNode::new(value)));
+        }
         //TODO
-        true
+        // unsafe {
+        //     let node_stock = Box::new(TreeNode::new(value.clone()));
+        //     let mut node_tree = &self.root;
+        //     if let Some(node) = node_tree {
+        //         loop {
+        //             let mut node_val = (*Box::into_raw((*node).clone())).value.clone();
+        //             while value < node_val {
+        //                 if let Some(node) = node_tree {
+        //                     if let None = (*Box::into_raw((*node).clone())).left {
+        //                         //(*(*node)).left = Some(node_stock);
+        //                         (*Box::into_raw((*node).clone())).left = Some(node_stock);
+        //                         return;
+        //                     } else {
+        //                         node_tree = &(*Box::into_raw((*node).clone())).left;
+        //                         node_val = (*Box::into_raw((*node).clone())).value.clone();
+        //                     }
+        //                 }
+        //             }
+        //             while value > node_val {
+        //                 if let Some(node) = node_tree {
+        //                     if let None = (*Box::into_raw((*node).clone())).right {
+        //                         (*Box::into_raw((*node).clone())).right = Some(node_stock);
+        //                         return;
+        //                     } else {
+        //                         node_tree = &(*Box::into_raw((*node).clone())).right;
+        //                         node_val = (*Box::into_raw((*node).clone())).value.clone();
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     } else {
+        //         self.root = Some(node_stock);
+        //         return;
+        //     }
+        // }
     }
+    fn search_recursive(&self, node: &Option<Box<TreeNode<T>>>, value: &T) -> bool {
+        match node {
+            None => false,
+            Some(n) => {
+                if value == &n.value {
+                    true
+                } else if value < &n.value {
+                    self.search_recursive(&n.left, value)
+                } else {
+                    self.search_recursive(&n.right, value)
+                }
+            }
+        }
+    }
+    // // Search for a value in the BST
+    fn search(&self, value: T) -> bool {
+        self.search_recursive(&self.root, &value)
+        //TODO
+        // unsafe {
+        //     let mut node_tree = &self.root;
+        //     //let mut node_val:T;
+        //     if let Some(node) = node_tree {
+        //         let mut node_val = (*Box::into_raw((*node).clone())).value.clone();
+            
+        //         loop {
+        //             while value < node_val {
+        //                 if let Some(node) = node_tree {
+        //                     node_tree = &(*Box::into_raw((*node).clone())).left;
+        //                     node_val = (*Box::into_raw((*node).clone())).value.clone();
+        //                 }
+        //                 else {
+        //                     return false;
+        //                 }
+        //             }
+        //             while value > node_val {
+        //                 if let Some(node) = node_tree {
+        //                     node_tree = &(*Box::into_raw((*node).clone())).right;
+        //                     node_val = (*Box::into_raw((*node).clone())).value.clone();
+        //                 }
+        //                 else {
+        //                     return false;
+        //                 }
+        //             }   
+        //             if value == node_val {
+        //                 return true;
+        //             }
+        //         }
+        //     } else {return false;}
+        // }
+    }
+    // Search for a value in the BST
+    // fn search(&self, value: T) -> bool {
+    //     //TODO
+    //     unsafe {
+    //         let mut node_tree = &self.root;
+    //         let mut node_val:T;
+    //         if let Some(node) = node_tree {
+    //             node_val = (*node).value.clone();
+    //         }
+    //         loop {
+    //             while value < node_val {
+    //                 if let Some(node) = node_tree {
+    //                     node_tree = &(*node).left;
+    //                     node_val = (*node).value.clone();
+    //                 }
+    //                 else {
+    //                     return false;
+    //                 }
+    //             }
+    //             while value > node_val {
+    //                 if let Some(node) = node_tree {
+    //                     node_tree = &(*node).right;
+    //                     node_val = (*node).value.clone();
+    //                 }
+    //                 else {
+    //                     return false;
+    //                 }
+    //             }   
+    //             if value == node_val {
+    //                 return true;
+    //             }
+    //         }
+    //     }
+    // }
 }
 
 impl<T> TreeNode<T>
@@ -67,6 +209,7 @@ where
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
         //TODO
+        self.value = value;
     }
 }
 

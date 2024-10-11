@@ -40,10 +40,47 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of
 // Person Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
+
 
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        let mut ret = Person{name: String::new(), age:0};
+        if s.len() == 0 {
+            ret.name = "John".to_string();
+            ret.age = 30;
+            return ret;
+        }
+        let mut count = 0;
+        for i in s.chars() {
+            if i == ',' {
+                count += 1;
+            }
+        }
+        if count != 1 {
+            ret.name = "John".to_string();
+            ret.age = 30;
+            return ret;
+        }
+        for (x,element) in s.split(',').enumerate() {
+            if x == 0 {
+                if element.is_empty() == false {
+                    ret.name = element.to_string();
+                } else {
+                    ret.name = "John".to_string();
+                    ret.age = 30;
+                    return ret;
+                }
+            } else if x == 1 {
+                match element.parse::<usize>() {
+                    Ok(x) => ret.age = x,
+                    Err(_) => {
+                        ret.name = "John".to_string();
+                        ret.age = 30;
+                    }
+                }
+            }
+        }
+        ret
     }
 }
 

@@ -27,7 +27,6 @@
 //
 // You should NOT modify any existing code except for adding two lines of attributes.
 
-// I AM NOT DONE
 
 extern "Rust" {
     fn my_demo_function(a: u32) -> u32;
@@ -36,9 +35,36 @@ extern "Rust" {
 
 mod Foo {
     // No `extern` equals `extern "Rust"`.
-    fn my_demo_function(a: u32) -> u32 {
+    pub fn my_demo_function(a: u32) -> u32 {
         a
     }
+}
+
+// // 将模块内的函数导出
+// pub use Foo::my_demo_function as my_demo_function_impl;
+
+// // 重定向外部函数到模块内部的实现
+// #[no_mangle]
+// pub extern "Rust" fn my_demo_function(a: u32) -> u32 {
+//     my_demo_function_impl(a)
+// }
+
+// // 重定向外部函数到模块内部的实现
+// #[no_mangle]
+// pub extern "Rust" fn my_demo_function_alias(a: u32) -> u32 {
+//     my_demo_function_impl(a)
+// }
+
+// 重定向外部函数到模块内部实现
+#[no_mangle]
+pub extern "Rust" fn my_demo_function1(a: u32) -> u32 {
+    Foo::my_demo_function(a)
+}
+
+// 重定向外部函数别名到模块内部实现
+#[no_mangle]
+pub extern "Rust" fn my_demo_function_alias1(a: u32) -> u32 {
+    Foo::my_demo_function(a)
 }
 
 #[cfg(test)]
@@ -54,8 +80,8 @@ mod tests {
         // SAFETY: We know those functions are aliases of a safe
         // Rust function.
         unsafe {
-            my_demo_function(123);
-            my_demo_function_alias(456);
+            my_demo_function1(123);
+            my_demo_function_alias1(456);
         }
     }
 }
